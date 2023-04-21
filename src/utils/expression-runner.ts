@@ -55,7 +55,8 @@ export function evaluateExpression(
     extractRepeatingGroupValues,
     calcGravida,
     calcDaysSinceCircumcisionProcedure,
-    calcTimeDifference
+    calcTimeDifference,
+    evaluateMLRiskCategory,
   } = new CommonExpressionHelpers(node, patient, allFields, allFieldValues, allFieldsKeys);
 
   parts.forEach((part, index) => {
@@ -114,6 +115,7 @@ export async function evaluateAsyncExpression(
     calcGravida,
     calcDaysSinceCircumcisionProcedure,
     calcTimeDifference,
+    evaluateMLRiskCategory,
   } = new CommonExpressionHelpers(node, patient, allFields, allFieldValues, allFieldsKeys);
 
   const lazyFragments = [];

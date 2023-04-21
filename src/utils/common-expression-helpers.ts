@@ -1,9 +1,10 @@
 'use ';
 import moment from 'moment';
 import { OHRIFormField } from '../api/types';
-import { FormNode } from './expression-runner';
+import { FormNode, resolve } from './expression-runner';
 import { isEmpty as isValueEmpty } from '../validators/ohri-form-validator';
 import * as apiFunctions from '../api/api';
+import { getMLRiskScore } from '../api/api';
 
 export class CommonExpressionHelpers {
   node: FormNode = null;
@@ -381,6 +382,45 @@ export class CommonExpressionHelpers {
     }
     return daySinceLastObs == '' ? "0": daySinceLastObs;
   }
+
+  evaluateMLRiskCategory(...args) {
+    let result = getMLRiskScore(args);
+    result.then((result) => {
+      console.log("-----here", result)
+      if (result.predictions['probability(1)'] != false) {
+        const lowRiskThreshold = 0.002625179;
+        const mediumRiskThreshold = 0.010638781;
+        const highRiskThreshold = 0.028924102;
+  
+        if (result.predictions['probability(1)'] !== null) {
+          if (result.predictions['probability(1)'] > highRiskThreshold) {
+            return 'Client has a very high probability of a HIV positive test result. Testing is strongly recommended';
+          }
+          if (
+            result.predictions['probability(1)'] < highRiskThreshold &&
+            result.predictions['probability(1)'] > mediumRiskThreshold
+          ) {
+            return 'Client has a high probability of a HIV positive test result. Testing is strongly recommended';
+          }
+          if (
+            result.predictions['probability(1)'] > lowRiskThreshold
+          ) {
+            return 'Client has a medium probability of a HIV positive test result. Testing is recommended';
+          }
+          if (result.predictions['probability(1)'] <= lowRiskThreshold) {
+            return 'Client has a low probability of a HIV positive test result. Testing may not be recommended';
+          }
+        }
+      }
+
+    })
+    .catch((err) => {
+      return  `An error occured: ${err}`;
+    })
+    
+
+  }
+
 }
 
 export function registerDependency(node: FormNode, determinant: OHRIFormField) {
