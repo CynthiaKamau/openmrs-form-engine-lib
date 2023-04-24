@@ -352,7 +352,7 @@ export class CommonExpressionHelpers {
     return daySinceLastCircumcision;
   }
 
-  calcTimeDifference = (obsDateId, timeFrame)  => {
+  calcTimeDifference = (obsDateId, timeFrame) => {
     let daySinceLastObs;
     let obsDate = this.allFieldValues[obsDateId];
     [obsDateId].forEach(entry => {
@@ -366,61 +366,33 @@ export class CommonExpressionHelpers {
     const endDate = moment(new Date());
     const duration = moment.duration(endDate.diff(obsDate));
 
-    if(obsDate !== '') {
-      if(timeFrame == 'd') {
+    if (obsDate !== '') {
+      if (timeFrame == 'd') {
         daySinceLastObs = Math.abs(duration.days());
       }
-      if(timeFrame == 'w') {
-        daySinceLastObs = Math.abs(duration.weeks())
+      if (timeFrame == 'w') {
+        daySinceLastObs = Math.abs(duration.weeks());
       }
-      if(timeFrame == 'm') {
+      if (timeFrame == 'm') {
         daySinceLastObs = Math.abs(duration.months());
       }
-      if(timeFrame == 'y') {
+      if (timeFrame == 'y') {
         daySinceLastObs = Math.abs(duration.years());
       }
     }
-    return daySinceLastObs == '' ? "0": daySinceLastObs;
-  }
+    return daySinceLastObs == '' ? '0' : daySinceLastObs;
+  };
 
   evaluateMLRiskCategory(...args) {
-    let result = getMLRiskScore(args);
-    result.then((result) => {
-      console.log("-----here", result)
-      if (result.predictions['probability(1)'] != false) {
-        const lowRiskThreshold = 0.002625179;
-        const mediumRiskThreshold = 0.010638781;
-        const highRiskThreshold = 0.028924102;
-  
-        if (result.predictions['probability(1)'] !== null) {
-          if (result.predictions['probability(1)'] > highRiskThreshold) {
-            return 'Client has a very high probability of a HIV positive test result. Testing is strongly recommended';
-          }
-          if (
-            result.predictions['probability(1)'] < highRiskThreshold &&
-            result.predictions['probability(1)'] > mediumRiskThreshold
-          ) {
-            return 'Client has a high probability of a HIV positive test result. Testing is strongly recommended';
-          }
-          if (
-            result.predictions['probability(1)'] > lowRiskThreshold
-          ) {
-            return 'Client has a medium probability of a HIV positive test result. Testing is recommended';
-          }
-          if (result.predictions['probability(1)'] <= lowRiskThreshold) {
-            return 'Client has a low probability of a HIV positive test result. Testing may not be recommended';
-          }
-        }
-      }
-
-    })
-    .catch((err) => {
-      return  `An error occured: ${err}`;
-    })
-    
-
+    let res = getMLRiskScore(args);
+    res.then(result => {
+        console.log('-----here', result);
+        return result;
+      })
+      .catch(err => {
+        return `An error occured: ${err}`;
+      });
   }
-
 }
 
 export function registerDependency(node: FormNode, determinant: OHRIFormField) {

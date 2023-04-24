@@ -233,3 +233,11 @@ export interface OpenmrsFormResource extends OpenmrsResource {
   dataType: string;
   valueReference: string;
 }
+
+export interface MachineLearningResponse {
+  result: {
+    predictions: {
+      'probability(1)': number;
+    };
+  };
+}
