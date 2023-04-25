@@ -355,15 +355,6 @@ export class CommonExpressionHelpers {
     return gravida;
   }
 
-  calcDaysSinceCircumcisionProcedure(val) {
-    let daySinceLastCircumcision = 0;
-    if (val) {
-      var timeDiff = Math.abs(new Date().getTime() - Date.parse(val));
-      daySinceLastCircumcision = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    }
-    return daySinceLastCircumcision;
-  }
-
   calcTimeDifference = (obsDateId, timeFrame) => {
     let daySinceLastObs;
     let obsDate = this.allFieldValues[obsDateId];
@@ -395,7 +386,8 @@ export class CommonExpressionHelpers {
     return daySinceLastObs == '' ? '0' : daySinceLastObs;
   };
 
-  evaluateMLRiskCategory(...args) {
+  evaluateMLRiskCategory = (...args) => {
+    console.log(args)
     return getMLRiskScore(args).then(result => {
       console.log('-----here', result);
       return result;
