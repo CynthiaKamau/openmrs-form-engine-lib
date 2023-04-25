@@ -334,10 +334,22 @@ export class CommonExpressionHelpers {
     return values;
   };
 
-  calcGravida(parityTerm: number, parityAbortion: number) {
+  calcGravida = (parityTermId, parityAbortionId) => {
     let gravida = 0;
-    if (parityTerm && parityAbortion) {
-      gravida = parityTerm + parityAbortion + 1;
+    let parityTerm = this.allFieldValues[parityTermId];
+    let abortionTerm = this.allFieldValues[parityAbortionId];
+
+    [parityTermId , parityAbortionId].forEach(entry => {
+      if (this.allFieldsKeys.includes(entry)) {
+        registerDependency(
+          this.node,
+          this.allFields.find(candidate => candidate.id == entry),
+        );
+      }
+    });
+
+    if (parityTerm && abortionTerm) {
+      gravida = parityTerm + abortionTerm + 1;
     }
 
     return gravida;
@@ -384,25 +396,13 @@ export class CommonExpressionHelpers {
   };
 
   evaluateMLRiskCategory(...args) {
-    let res;
-
-    (async () => {
-      const meta = await getMLRiskScore(args);
-      console.log(meta); // {"metadata": "for: test.png"}
-      res = meta;
-      return meta;
-    })();
-
-    // getMLRiskScore(args).then(result => {
-    //     console.log('-----here', result);
-    //     res = result;
-    //   })
-    //   .catch(err => {
-    //     res = `An error occured: ${err}`;
-    //   });
-
-    console.log("---t", res)
-    return getMLRiskScore(args);
+    return getMLRiskScore(args).then(result => {
+      console.log('-----here', result);
+      return result;
+    })
+    .catch(err => {
+      return `An error occured: ${err}`;
+    });
   }
 }
 

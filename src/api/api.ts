@@ -277,10 +277,6 @@ export async function getMLRiskScore(params: any): Promise<any | null> {
     facilityId: '',
     debug: 'true',
   };
-  // var mlScoringRequestPayload = {
-  //   modelConfigs: modelConfigs,
-  //   variableValues: predictionVariables
-  // }
 
   var mlScoringRequestPayload = {
     modelConfigs: { modelId: 'hts_xgb_1211_jan_2023', encounterDate: '2023-03-15', facilityId: '', debug: 'true' },
@@ -467,35 +463,30 @@ export async function getMLRiskScore(params: any): Promise<any | null> {
     body: JSON.stringify(mlScoringRequestPayload),
   });
 
-  // console.log("---res", response.then((response) => {
-  //   console.log("---haha", response.json())
-  // }).then((error) => console.log("---error", error)))
-
-  return response.json().then(result => {
-    if (result?.result?.predictions) {
-      console.log("---y", result?.result?.predictions)
-      const lowRiskThreshold = 0.002625179;
-      const mediumRiskThreshold = 0.010638781;
-      const highRiskThreshold = 0.028924102;
-      if (result?.result?.predictions['probability(1)'] > highRiskThreshold) {
-        return 'Client has a very high probability of a HIV positive test result. Testing is strongly recommended';
-      }
-      if (
-        result?.result?.predictions['probability(1)'] < highRiskThreshold &&
-        result.result.predictions['probability(1)'] > mediumRiskThreshold
-      ) {
-        return 'Client has a high probability of a HIV positive test result. Testing is strongly recommended';
-      }
-      if (result?.result?.predictions['probability(1)'] > lowRiskThreshold) {
-        return 'Client has a medium probability of a HIV positive test result. Testing is recommended';
-      }
-      if (result?.result?.predictions['probability(1)'] <= lowRiskThreshold) {
-        return 'Client has a low probability of a HIV positive test result. Testing may not be recommended';
-      } else {
-        return `No results found`;
-      }
-    } else {
-      return `No results found`;
-    }
-  });
+  let result = await response.json();
+  console.log("---abantu", result)
+  if (result?.result?.predictions) {
+        const lowRiskThreshold = 0.002625179;
+        const mediumRiskThreshold = 0.010638781;
+        const highRiskThreshold = 0.028924102;
+        if (result?.result?.predictions['probability(1)'] > highRiskThreshold) {
+          return 'Client has a very high probability of a HIV positive test result. Testing is strongly recommended';
+        }
+        if (
+          result?.result?.predictions['probability(1)'] < highRiskThreshold &&
+          result.result.predictions['probability(1)'] > mediumRiskThreshold
+        ) {
+          return 'Client has a high probability of a HIV positive test result. Testing is strongly recommended';
+        }
+        if (result?.result?.predictions['probability(1)'] > lowRiskThreshold) {
+          return 'Client has a medium probability of a HIV positive test result. Testing is recommended';
+        }
+        if (result?.result?.predictions['probability(1)'] <= lowRiskThreshold) {
+          return 'Client has a low probability of a HIV positive test result. Testing may not be recommended';
+        } else {
+          return `No results found`;
+        }
+  } else {
+    return `No results found`;
+  }
 }
