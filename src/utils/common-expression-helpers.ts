@@ -384,14 +384,25 @@ export class CommonExpressionHelpers {
   };
 
   evaluateMLRiskCategory(...args) {
-    let res = getMLRiskScore(args);
-    res.then(result => {
-        console.log('-----here', result);
-        return result;
-      })
-      .catch(err => {
-        return `An error occured: ${err}`;
-      });
+    let res;
+
+    (async () => {
+      const meta = await getMLRiskScore(args);
+      console.log(meta); // {"metadata": "for: test.png"}
+      res = meta;
+      return meta;
+    })();
+
+    // getMLRiskScore(args).then(result => {
+    //     console.log('-----here', result);
+    //     res = result;
+    //   })
+    //   .catch(err => {
+    //     res = `An error occured: ${err}`;
+    //   });
+
+    console.log("---t", res)
+    return getMLRiskScore(args);
   }
 }
 
